@@ -9,9 +9,24 @@ app.set('view engine', 'pug')
 
 
 app.get('/', (req, res) => {
-    res.render('index', {
-        title: 'Articles'
-    })
+    let articles = [
+        {
+            id: 1,
+            title: 'title one',
+            author: 'oxc'
+        },
+        {
+            id: 2,
+            title: 'title two',
+            author: 'oxc'
+        },
+        {
+            id: 3,
+            title: 'title three',
+            author: 'oxc'
+        }
+    ]
+    res.render('index', {articles})
 })
 
 app.get('/articles/new', (req, res) => {
