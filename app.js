@@ -10,7 +10,13 @@ app.set('view engine', 'pug')
 
 app.get('/', (req, res) => {
     res.render('index', {
-        title: '大春'
+        title: 'Articles'
+    })
+})
+
+app.get('/articles/new', (req, res) => {
+    res.render('new', {
+        title: 'Add Article'
     })
 })
 
