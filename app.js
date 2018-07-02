@@ -3,6 +3,13 @@ const app = express()
 const path = require('path')
 const mongoose = require('mongoose')
 
+
+// 设置模板地址
+app.set('views', path.join(__dirname, 'views'))
+// 设置模板引擎
+app.set('view engine', 'pug')
+
+
 // 链接数据库
 mongoose.connect("mongodb://localhost/express-blog")
 // 获取connection
@@ -16,31 +23,14 @@ db.on('error', err => {
     console.log(err)
 })
 
-// 设置模板地址
-app.set('views', path.join(__dirname, 'views'))
-// 设置模板引擎
-app.set('view engine', 'pug')
-
+// 导入数据
+let Article = require('./models/articles')
 
 app.get('/', (req, res) => {
-    let articles = [
-        {
-            id: 1,
-            title: 'title one',
-            author: 'oxc'
-        },
-        {
-            id: 2,
-            title: 'title two',
-            author: 'oxc'
-        },
-        {
-            id: 3,
-            title: 'title three',
-            author: 'oxc'
-        }
-    ]
-    res.render('index', {articles})
+    // 读取数据
+    Article.find({}, (err, articles) => {
+        res.render('index', {articles})
+    })
 })
 
 app.get('/articles/new', (req, res) => {
