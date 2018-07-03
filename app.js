@@ -3,6 +3,7 @@ const app = express()
 const path = require('path')
 const mongoose = require('mongoose')
 const bodyParser = require('body-parser')
+const session = require('express-session')
 
 // 设置post路由读取数据的中间件
 app.use(bodyParser.urlencoded({extended: false}))
@@ -25,6 +26,20 @@ db.once('open', () => {
 // 链接出错监听
 db.on('error', err => {
     console.log(err)
+})
+
+// 引入session库，以中间件的形式使用
+app.use(session({
+    secret: 'keyboard cat',
+    resave: false,
+    saveUninitialized: true
+}))
+
+// 显示更改信息
+app.use(require('connect-flash')())
+app.use((req,res,next) => {
+    res.locals.messages = require('express-messages')(req, res)
+    next()
 })
 
 // 导入数据
@@ -64,6 +79,7 @@ app.post('/articles/create',  (req, res) => {
             return
         } else {
             // 此处会跳转首页
+            req.flash('success', 'Article Added')
             res.redirect('/')
         }
     })
@@ -99,25 +115,13 @@ app.post('/articles/update/:id', (req, res) => {
             return
         } else {
             // 此处会跳转首页
+            req.flash('success', 'Article updated')
             res.redirect('/')
         }
     })
 })
 
 // 删除文章
-app.get('/articles/:id/delete', (req,res) => {
-    const query = {_id: req.params.id}
-    Article.deleteOne(query, err => {
-        if(err) {
-            console.log(err)
-            return
-        } else {
-            // 此处会跳转首页
-            res.redirect('/')
-        }
-    })
-})
-
 app.delete('/articles/:id', (req, res) => {
     const query = {_id: req.params.id}
     Article.remove(query, err => {
@@ -125,6 +129,7 @@ app.delete('/articles/:id', (req, res) => {
             console.log(err)
             return
         }
+        req.flash('success', 'Article Deleted')
         res.send('success')
     })
 })
