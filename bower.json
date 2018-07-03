@@ -1,0 +1,22 @@
+{
+  "name": "express-blog",
+  "description": "一个利用express做的很简陋的blog",
+  "main": "index.js",
+  "authors": [
+    "oxc <oxc@oxc.com>"
+  ],
+  "license": "ISC",
+  "homepage": "https://github.com/hungeroxc/express-blog",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "public",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "bootstrap": "^4.1.1",
+    "jquery": "^3.3.1"
+  }
+}
