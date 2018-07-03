@@ -30,6 +30,10 @@ db.on('error', err => {
 // 导入数据
 let Article = require('./models/articles')
 
+
+// 静态文件中间件
+app.use(express.static(path.join(__dirname, 'public')))
+
 // 首页读取数据并渲染
 app.get('/', (req, res) => {
     // 读取数据
