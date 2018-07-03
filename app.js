@@ -4,6 +4,7 @@ const path = require('path')
 const mongoose = require('mongoose')
 const bodyParser = require('body-parser')
 const session = require('express-session')
+const {check, validationResult} = require('express-validator/check')
 
 // 设置post路由读取数据的中间件
 app.use(bodyParser.urlencoded({extended: false}))
@@ -66,23 +67,37 @@ app.get('/articles/new', (req, res) => {
 
 
 // 新增文章路由
-app.post('/articles/create',  (req, res) => {
-    let article = new Article()
-    const {title, author, body} = req.body
-    article.title = title
-    article.author = author
-    article.body = body
-
-    article.save(err => {
-        if(err) {
-            console.log(err)
-            return
-        } else {
-            // 此处会跳转首页
-            req.flash('success', 'Article Added')
-            res.redirect('/')
-        }
-    })
+app.post('/articles/create', [
+    // 验证
+    check('title').isLength({min: 1}).withMessage('Title is required'),
+    check('body').isLength({min: 1}).withMessage('Body is required'),
+    check('author').isLength({min: 1}).withMessage('Author is required')
+],  (req, res) => {
+    // 先判断验证结果
+    const errors = validationResult(req)
+    if(!errors.isEmpty()) {
+        res.render('new', {
+            errors: errors.array(),
+            title: 'Add Article',
+        })
+    } else {
+        const article = new Article()
+        const {title, author, body} = req.body
+        article.title = title
+        article.author = author
+        article.body = body
+    
+        article.save(err => {
+            if(err) {
+                console.log(err)
+                return
+            } else {
+                // 此处会跳转首页
+                req.flash('success', 'Article Added')
+                res.redirect('/')
+            }
+        })
+    }
 })
 
 // 点击文章标题查看文章
