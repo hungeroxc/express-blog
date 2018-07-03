@@ -42,6 +42,33 @@ app.get('/', (req, res) => {
     })
 })
 
+// 跳转新增文章页面
+app.get('/articles/new', (req, res) => {
+    res.render('new', {
+        title: 'Add Article'
+    })
+})
+
+
+// 新增文章路由
+app.post('/articles/create',  (req, res) => {
+    let article = new Article()
+    const {title, author, body} = req.body
+    article.title = title
+    article.author = author
+    article.body = body
+
+    article.save(err => {
+        if(err) {
+            console.log(err)
+            return
+        } else {
+            // 此处会跳转首页
+            res.redirect('/')
+        }
+    })
+})
+
 // 点击文章标题查看文章
 app.get('/articles/:id', (req, res) => {
     const params = req.params
@@ -77,21 +104,10 @@ app.post('/articles/update/:id', (req, res) => {
     })
 })
 
-app.get('/articles/new', (req, res) => {
-    res.render('new', {
-        title: 'Add Article'
-    })
-})
-
-// 创建文章路由
-app.post('/articles/create',  (req, res) => {
-    let article = new Article()
-    const {title, author, body} = req.body
-    article.title = title
-    article.author = author
-    article.body = body
-
-    article.save(err => {
+// 删除文章
+app.get('/articles/:id/delete', (req,res) => {
+    const query = {_id: req.params.id}
+    Article.deleteOne(query, err => {
         if(err) {
             console.log(err)
             return
@@ -101,6 +117,9 @@ app.post('/articles/create',  (req, res) => {
         }
     })
 })
+
+
+
 
 app.listen(3000, () => {
     console.log('Server started on port 3000')
