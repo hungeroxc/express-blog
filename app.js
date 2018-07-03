@@ -42,6 +42,15 @@ app.get('/', (req, res) => {
     })
 })
 
+// 点击文章标题查看文章
+app.get('/articles/:id', (req, res) => {
+    const params = req.params
+    Article.findById(params.id, (err, article) => {
+        if(err) throw err
+        res.render('show', {article})
+    })
+})
+
 app.get('/articles/new', (req, res) => {
     res.render('new', {
         title: 'Add Article'
