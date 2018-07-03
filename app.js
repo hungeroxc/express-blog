@@ -51,6 +51,32 @@ app.get('/articles/:id', (req, res) => {
     })
 })
 
+// 跳转修改页面
+app.get('/articles/:id/edit', (req, res) => {
+    const params = req.params
+    Article.findById(params.id, (err, article) => {
+        if(err) throw err
+        res.render('edit', {
+            article,
+            title: 'Edit Article'
+        })
+    })
+})
+
+// 修改文章
+app.post('/articles/update/:id', (req, res) => {
+    const query = {_id: req.params.id}
+    Article.update(query, req.body, err => {
+        if(err) {
+            console.log(err)
+            return
+        } else {
+            // 此处会跳转首页
+            res.redirect('/')
+        }
+    })
+})
+
 app.get('/articles/new', (req, res) => {
     res.render('new', {
         title: 'Add Article'
