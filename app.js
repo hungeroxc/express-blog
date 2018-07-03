@@ -118,6 +118,17 @@ app.get('/articles/:id/delete', (req,res) => {
     })
 })
 
+app.delete('/articles/:id', (req, res) => {
+    const query = {_id: req.params.id}
+    Article.remove(query, err => {
+        if(err) {
+            console.log(err)
+            return
+        }
+        res.send('success')
+    })
+})
+
 
 
 
