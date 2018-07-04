@@ -4,7 +4,6 @@ const path = require('path')
 const mongoose = require('mongoose')
 const bodyParser = require('body-parser')
 const session = require('express-session')
-const {check, validationResult} = require('express-validator/check')
 
 // 设置post路由读取数据的中间件
 app.use(bodyParser.urlencoded({extended: false}))
@@ -50,102 +49,15 @@ let Article = require('./models/articles')
 // 静态文件中间件
 app.use(express.static(path.join(__dirname, 'public')))
 
+// 使用article路由
+const articles = require('./routes/articles')
+app.use('/articles', articles)
+
 // 首页读取数据并渲染
 app.get('/', (req, res) => {
     // 读取数据
     Article.find({}, (err, articles) => {
-        res.render('index', {articles})
-    })
-})
-
-// 跳转新增文章页面
-app.get('/articles/new', (req, res) => {
-    res.render('new', {
-        title: 'Add Article'
-    })
-})
-
-
-// 新增文章路由
-app.post('/articles/create', [
-    // 验证
-    check('title').isLength({min: 1}).withMessage('Title is required'),
-    check('body').isLength({min: 1}).withMessage('Body is required'),
-    check('author').isLength({min: 1}).withMessage('Author is required')
-],  (req, res) => {
-    // 先判断验证结果
-    const errors = validationResult(req)
-    if(!errors.isEmpty()) {
-        res.render('new', {
-            errors: errors.array(),
-            title: 'Add Article',
-        })
-    } else {
-        const article = new Article()
-        const {title, author, body} = req.body
-        article.title = title
-        article.author = author
-        article.body = body
-    
-        article.save(err => {
-            if(err) {
-                console.log(err)
-                return
-            } else {
-                // 此处会跳转首页
-                req.flash('success', 'Article Added')
-                res.redirect('/')
-            }
-        })
-    }
-})
-
-// 点击文章标题查看文章
-app.get('/articles/:id', (req, res) => {
-    const params = req.params
-    Article.findById(params.id, (err, article) => {
-        if(err) throw err
-        res.render('show', {article})
-    })
-})
-
-// 跳转修改页面
-app.get('/articles/:id/edit', (req, res) => {
-    const params = req.params
-    Article.findById(params.id, (err, article) => {
-        if(err) throw err
-        res.render('edit', {
-            article,
-            title: 'Edit Article'
-        })
-    })
-})
-
-// 修改文章
-app.post('/articles/update/:id', (req, res) => {
-    const query = {_id: req.params.id}
-    Article.update(query, req.body, err => {
-        if(err) {
-            console.log(err)
-            return
-        } else {
-            // 此处会跳转首页
-            req.flash('success', 'Article updated')
-            res.redirect('/')
-        }
-    })
-})
-
-// 删除文章
-app.delete('/articles/:id', (req, res) => {
-    const query = {_id: req.params.id}
-    Article.remove(query, err => {
-        if(err) {
-            console.log(err)
-            return
-        }
-        req.flash('success', 'Article Deleted')
-        res.send('success')
+        res.render('articles/index', {articles})
     })
 })
 
